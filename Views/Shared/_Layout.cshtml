@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title></title>
+	<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+	<link href="https://fonts.googleapis.com/css2?family=Creepster&family=Roboto+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet"> 
+	
+</head>
+<body>
+	<div class="item-bg" style="width:100%; height:5vh; position:fixed; top:0; white-space:nowrap; font-size:2vh;">
+		<div class="container" style="height:100%; white-space:nowrap;">
+			
+			<span style="display:inline-block; line-height:5vh;">
+				@if (User.Identity!.IsAuthenticated)
+				{ 
+					<span>Hello, @User.Claims.FirstOrDefault(c => c.Type == "username")!.Value</span>
+					<span class="text-warning"><a class="text-warning" style="text-decoration:none;" href="/logout">(Logout)</a></span>
+					<span id="username" style="display:none;">@User.Claims.FirstOrDefault(c => c.Type == "username")!.Value</span>
+				}
+				else
+				{
+					<span><a class="text-warning" style="text-decoration:none;" href="/home/login">Login</a></span>
+				}
+			</span>
+
+			@if(User.Identity!.IsAuthenticated)
+			{
+				<div class="nav" style="font-size:2vh;">
+					<a class="p-2 nav-item" href="/usersettings">User settings</a>
+					<a class="p-2 nav-item" href="/">My playlist</a>
+				</div>
+			}
+
+
+		</div>
+	</div>
+	<div class="container-fluid">
+		<div class="m-0" style="height:100vh; width:25vw; position: fixed; right:0; pointer-events:none; z-index: 999999;">
+			<div id="notificationColumn" class="text-wrap text-break text-white" style="position: absolute; bottom: 0; width:100%;">
+			</div>
+		</div> 
+		<div class="mb-3" style="width:100%; height:5vh; top:0;"></div>
+		<div class="row">
+			<div class="col-sm-3"></div>
+			<div class="col-sm-6">@RenderBody()</div>
+			<div class="col-sm-3"></div>
+		</div> 
+		<div style="width:100%; height:10vh; white-space:nowrap;"> <!--For bottom controls-->
+			<div class="container" style="height:100%; white-space:nowrap;">
+			</div>
+		</div>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="/js/notifications.js" asp-append-version="true"></script>
+	<script src="/js/utils.js" asp-append-version="true"></script>
+
+	<script>
+		var title = `FUCK SPOTIFY. ALL MY HOMIES USE ${location.host}`;
+
+		$("title").text(title);
+		Document.title = `FUCK SPOTIFY. ALL MY HOMIES USE ${hostName}`
+	</script>
+
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,414 @@
+﻿<audio src="" ontimeupdate="onAudioTimeUpdate()"></audio>
+
+<div class="text-center text-mono">
+	<h1 style="text-transform: uppercase; font-size:2vw;">
+		<i class="bi bi-spotify" style="color:#1DB954"></i>
+		<u>fuck spotify</u>
+		<i class="bi bi-spotify" style="color:#1DB954;"></i>
+	</h1>
+	<h3 style="font-size:1.25vw;">All my homies use <a id="hostElem"></a></h3>
+</div>
+
+<div class="item-bg rounded p-3 text-mono m-0" style="min-width:100%;">
+	<h1 id="playlistTitle">Someone's playlist</h1>
+	<p id="playlistSongsCount" class="m-0">0 songs</p>
+	<p id="playlistDuration" class="m-0">0 hr, 0 min, 0 sec</p>
+</div>
+
+<div id="leftControls" class="p-3 col-lg-2 item-bg rounded">
+	<h1 class="text-center">Settings</h1>
+	<h3>Bitrate</h3>
+	<p>Selected bitrate: <span id="bitRateStringElem"></span></p>
+	<input id="bitRateSlider" type="range" min="0" max="21" step="1" style="width:100%"
+		   onchange="updateBitRate()"
+		   oninput="updateBitRate()" />
+
+	<div class="onlyForOwner">
+		<h3>Sharing</h3>
+		<p>
+			Should this playlist be public?
+			<input id="isPlaylistPublicCheckbox" onchange="changePlaylistVisibility()" style="transform: scale(2);" type="checkbox" class="onlyForOwner form-check-input mx-3" />
+		</p>
+	</div>
+
+
+	<h1 class="text-center">Controls</h1>
+
+
+	<form method="post" enctype="multipart/form-data" action="/api/music" id="uploadFilesForm">
+		<input id="songsUploadInput" style="display:none;" type="file" name="songFiles" multiple accept=".mp3" onchange="uploadFiles()" />
+	</form>
+
+	<div class="row">
+		<div class="col-lg-6">
+			<form action="/api/music/downloadall" target="dummyFrame">
+				<iframe name="dummyFrame" id="dummyFrame" style="display: none;"></iframe>
+				<input id="playlistNameInput" type="hidden" name="playlistName" value="">
+				<input id="downloadAllInput" type="submit" class="btn btn-primary mb-2" style="width:100%;" value="Download all" />
+			</form>
+		</div>
+
+		<div class="col-lg-6">
+			<label for="songsUploadInput" class="btn btn-primary onlyForOwner" style="width:100%;">Upload song(s)</label>
+		</div>
+	</div>
+	<div class="row mt-3">
+		<div class="col-lg-6">
+			<button class="btn btn-primary mb-2" style="width:100%;" onclick="showStats()">Show stats</button>
+		</div>
+
+		<div class="col-lg-6">
+			<button class="btn btn-primary" style="width:100%;" onclick="copyPlaylistLink()">Copy playlist link</button>
+		</div>
+	</div>
+</div>
+
+<div id="songContextMenu" class="item-bg rounded p-2" style="display:none; position:absolute; font-size:1.5rem; z-index:999;">
+	<div class="menu-item p-1" onclick="downloadContextMenuSong()">
+		<i class="bi bi-cloud-arrow-down-fill"></i>
+		Download
+	</div>
+	<div class="menu-item p-1" onclick="copySongLink()">
+		<i class="bi bi-share-fill"></i>
+		Copy public link
+	</div>
+	<div class="menu-item p-1 onlyForOwner" onclick="deleteSongContextMenu()">
+		<i class="bi bi-trash-fill"></i>
+		Delete
+	</div>
+	<div class="menu-item p-1 onlyForOwner" onclick="showSongEditor($(this).parent().attr('data-filename'))">
+		<i class="bi bi-pencil-fill"></i>
+		Edit
+	</div>
+	<div class="menu-item p-1 onlyForNonOwner" style="display:none;" onclick="addSongIntoPlaylist($(this).parent().attr('data-filename'))">
+		<i class="bi bi-plus-lg"></i>
+		Add to my playlist
+	</div>
+</div>
+
+<div id="generalContextMenu" class="item-bg rounded p-2" style="display:none; position:absolute; font-size:1.5rem; z-index:999;">
+	<div class="menu-item p-1" onclick="$('#downloadAllInput').click()">
+		<i class="bi bi-cloud-arrow-down-fill"></i>
+		Download all songs
+	</div>
+	<div class="menu-item p-1" onclick="downloadCurrentSong()">
+		<i class="bi bi-download"></i>
+		Download current song
+	</div>
+	<div class="menu-item p-1 onlyForOwner" onclick="deleteCurrentSong()">
+		<i class="bi bi-trash-fill"></i>
+		Delete current song
+	</div>
+	<div class="menu-item p-1" onclick="showStats()">
+		<i class="bi bi-pie-chart-fill"></i>
+		Show playlist stats
+	</div>
+	<div class="menu-item p-1 onlyForOwner" onclick="$('#songsUploadInput').click()">
+		<i class="bi bi-upload"></i>
+		Upload song(s)
+	</div>
+	<div class="menu-item p-1" onclick="copyPlaylistLink()">
+		<i class="bi bi-share-fill"></i>
+		Copy playlist link
+	</div>
+</div>
+
+<div id="popUpsList" >
+
+	<div id="screenDarker" style="z-index:99999; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0, 0, 0, 0.5); display:none;"
+		 onclick="hideAllThePopUps()">
+	</div>
+
+	<div id="changeVisibilityWarning" class="center item-bg rounded p-4" style="display:none; color:white; z-index:99999; max-height:100%; overflow:auto;">
+		In order to copy <b>public</b> playlist link you firstly need to change playlist visibility to public.<br />
+		<h3 style="text-align:center;" class="mt-2">Do you want to change playlist visibility?</h3>
+		<p class="" style="color:lightslategray;">Note: You can cahnge it to private anytime in settings.</p>
+		<div style="width:100%; justify-content:space-between; display:flex;">
+			<button class="btn btn-success" style="margin:0;" onclick="acceptChangingVisibility()">
+				Yes, change playlist visibility to public.
+			</button>
+
+			<button class="btn btn-danger" style="margin:0;" onclick="hideAllThePopUps()">
+				No, i respect my privacy.
+			</button>
+		</div>
+	</div>
+
+	<div id="songEditor" style="display:none;">
+
+		<div class="center item-bg rounded" style="color:white; z-index:99999; /*min-height:50%;*/ width:50%; max-height:100%; overflow:auto;">
+
+			<div class="px-1"
+				 style="background-color:black; white-space:nowrap; display: flex; position:relative;
+				justify-content: space-between; align-items: center; width:100%; font-size:1.25rem;">
+
+				<p id="songEditorTitle">Title</p>
+				<i class="bi bi-x-circle-fill kinda-btn-red"
+				   onclick="hideAllThePopUps()">
+				</i>
+			</div>
+
+			<div class="p-3" style="width:100%; height:100%;">
+
+				<div class="row">
+
+					<div class="col-lg-6">
+
+
+						<h1 class="kinda-btn" style="text-transform:uppercase; text-align:center;">Editable data</h1>
+
+						<div class="row">
+							<div class="col-sm-1">
+								Title
+							</div>
+							<div class="col-lg-11">
+								<input id="titleInput" type="text" style="width:100%;" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-1">
+								Artist
+							</div>
+							<div class="col-lg-11">
+								<input id="artistInput" type="text" style="width:100%;" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-1">
+								Album
+							</div>
+							<div class="col-lg-11">
+								<input id="albumInput" type="text" style="width:100%;" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-1">
+								Genre
+							</div>
+							<div class="col-lg-11">
+								<input id="genreInput" type="text" style="width:100%;" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-1">
+								Year
+							</div>
+							<div class="col-lg-11">
+								<input id="yearInput" type="text" style="width:100%;" onkeypress="return SongEditorNumInputValidation(event)" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-1">
+								Index
+							</div>
+							<div class="col-lg-11">
+								<input id="indexInput" type="text" style="width:100%;" onkeypress="return SongEditorNumInputValidation(event)" />
+							</div>
+						</div>
+
+					</div>
+
+					<div class="col-lg-6">
+
+
+						<h1 class="kinda-btn" style="text-transform:uppercase; text-align:center;">Info</h1>
+
+						<div class="row">
+							<div class="col-lg-12">
+								Link: <span id="songLink" class="mono" onclick="copyToClipboard($(this).text())">Link here</span>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-lg-12">
+								Duration: <span id="songDuration" class="mono" onclick="copyToClipboard($(this).text())">Duration here</span>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-lg-12">
+								Created: <span id="songCreatedDateTime" class="mono" onclick="copyToClipboard($(this).text())">Created date time here</span>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-lg-12">
+								Added: <span id="songAddedDateTime" class="mono" onclick="copyToClipboard($(this).text())">added date time here</span>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-lg-12">
+								BitRate: <span id="songBitRate" class="mono" onclick="copyToClipboard($(this).text())">Bitrate here</span>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="row mt-3" style="text-align:center; text-transform:uppercase;">
+					<div class="col-lg-12 kinda-btn">
+						<h1>Controls</h1>
+					</div>
+				</div>
+
+				<div class="p-2" style="min-width:100%; justify-content:space-between; display: flex; justify-content: center; align-items: center; height: 3rem;">
+					<button class="btn btn-primary mx-2" onclick="downloadContextMenuSong()">Download</button>
+					<button class="btn btn-danger mx-2" onclick="deleteSongContextMenu()">Delete</button>
+					<button class="btn btn-info mx-2" onclick="saveSongChanges()">Save changes</button>
+					<button class="btn btn-warning mx-2" onclick="hideAllThePopUps()">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="playlistStats" class="center item-bg" style="display:none; color:white; z-index:99999; width:50%; max-height:100%; overflow:auto;">
+
+		<div class="px-1"
+			 style="background-color:black; white-space:nowrap; display: flex; position:relative;
+				justify-content: space-between; align-items: center; width:100%; font-size:1.25rem;">
+
+			<p id="songEditorTitle">Playlist statistic</p>
+			<i class="bi bi-x-circle-fill kinda-btn-red"
+			   onclick="hideAllThePopUps()">
+			</i>
+		</div>
+
+		<div class="p-3" style="width:100%; height:100%;">
+
+			<div class="row">
+
+				<div class="col-lg-6">
+
+					<div class="row">
+						<h1 style="text-align:center;">Artist distribution</h1>
+						<canvas id="artistChart" width="200" height="200"></canvas>
+					</div>
+
+				</div>
+
+				<div class="col-lg-6">
+
+					<div class="row">
+						<h1 style="text-align:center;">Genre distribution</h1>
+						<canvas id="genreChart" width="200" height="200"></canvas>
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+	<div id="dropFilesElem" class="center text-center p-5" style="display:none; color:#6247AA; z-index:99999; width:50%; max-height:100%; overflow:auto; border:dashed 2rem;">
+		<h1 style="color:white;">Lets upload these files!</h1>
+		<i style="font-size:10rem;" class="bi bi-cloud-plus-fill"></i>
+	</div>
+
+</div>
+
+
+<div class="row mt-2 p-2 item-bg rounded" style="font-size:1.5rem;">
+	<div id="indexHeader" class="col-sm-1 kinda-btn table-header" style="justify-content: center;" onclick="sortSongs('UserIndex')"><span>#</span></div>
+	<div id="titleHeader" class="col-sm-2 kinda-btn table-header" onclick="sortSongs('Title')"><span>Title</span></div>
+	<div id="artistHeader" class="col-sm-2 kinda-btn table-header" onclick="sortSongs('Artist')"><span>Artist</span></div>
+	<div id="albumHeader" class="col-sm-3 kinda-btn table-header" onclick="sortSongs('Album')"><span>Album</span></div>
+	<div id="dateAddedHeader" class="col-sm-2 kinda-btn table-header" style="justify-content: center;" onclick="sortSongs('DateAdded')"><span>Date added</span></div>
+	<div id="durationHeader" class="col-sm-2 kinda-btn table-header" style="justify-content: center;" onclick="sortSongs('Duration')">
+		<i class="bi bi-clock "></i>
+	</div>
+</div>
+
+<div id="songsLoadingElement" style="width:100%; text-align:center;">
+	<h1>
+		Please wait. Your music library is loading...<br />
+		<div class="spinner-border text-primary" role="status">
+		  <span class="visually-hidden">Loading...</span>
+		</div>
+	</h1>
+</div>
+
+<div id="songsErrorElement" class="bg-danger rounded mt-2 p-3" style="width:100%; text-align:center; display:none;">
+	<h1>Failed to load music :(</h1>
+	<h3>Try to reload page...</h3>
+</div>
+
+<div id="songsEmptyElement" class="my-5" style="width:100%; text-align:center; display:none;">
+	<h1>Unfortunately, you have no songs in your library :( </h1>
+</div>
+
+<div id="songList"> </div>
+
+<!--Bottom controls-->
+<div class="item-bg" style="width:100%; height:10vh; position:fixed; bottom:0; left:0; white-space:nowrap; z-index:2;">
+	<div class="container-fluid">
+
+		<div class="row">
+			<div class="col-sm-2">
+				<div class="p-3 text-break text-wrap" 
+				style="white-space:nowrap; display: flex; justify-content: center; flex-direction:column; height:10vh; font-size:2vh;">
+					<p id="songTitle" class="my-0">Song title</p>
+					<p id="SongArtist" style="color:gray;" class="my-0">Song artists</p>
+				</div>
+			</div>
+			<div class="col-sm-8">
+
+				<div style="white-space:nowrap; font-size:4.5vh; display: flex; justify-content: center; align-items: center;">
+					<i id="shuffleBtn" class="bi bi-shuffle kinda-btn" style="font-size:0.75em;" onclick="shuffleBtnClick()"></i>
+					<i class="bi bi-skip-start-fill kinda-btn" onclick="prevSong()"></i>
+					<i id="playBtn" class="bi bi-play-circle-fill kinda-btn" onclick="toggleSong()"></i>
+					<i class="bi bi-skip-start-fill mirror-flip kinda-btn" onclick="nextSong()"></i>
+					<i id="repeatBtn" class="bi bi-arrow-repeat kinda-btn" onclick="repeatBtnClick()" style="font-size:0.75em;"></i>
+				</div>
+
+				<div class="container mt-0" style="white-space:nowrap; font-size:1.75vh; display: flex; justify-content: center; align-items: center;">
+					<p id="curTime" class="my-0 mx-2">00:00</p>
+
+					<input id="songTimeSlider" type="range" min="0" max="0" step="1" value="0" style="min-width:50vw !important;" oninput="onSongTimeInput()" />
+
+					<p id="duration" class="my-0 mx-2">00:00</p>
+
+				</div>
+
+			</div>
+			<div class="col-sm-2" style="font-size:3.5vh;">
+				<div style="white-space:nowrap; display: flex; justify-content: center; align-items: center; height:10vh;">
+
+					<div class="kinda-btn-red onlyForOwner" onclick="deleteCurrentSong()">
+						<i class="bi bi-trash-fill"></i>
+					</div>
+					<div class="kinda-btn mx-2" onclick="downloadCurrentSong()">
+						<i class="bi bi-download"></i>
+					</div>
+
+					<div id="volumeBtn" class="kinda-btn" onclick="volumeBtnClick()">
+						<i id="volumeIcon" class="bi bi-volume-up-fill"></i>
+					</div>
+
+					<div id="mutedVolumeBtn" class="muted-volume" style="visibility:collapse;" onclick="mutedVolumeBtnClick()">
+						<i class="bi bi-volume-mute-fill"></i>
+					</div>
+
+					<input id="volumeSlider" type="range" min="0" max="1" step="0.01"
+						   style="min-width:50% !important;"
+						   onchange="updateAudioVolume()"
+						   oninput="updateAudioVolume()" />
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="~/js/playlist.js"></script>
+<script src="~/js/utils.js"></script>
+<script src="~/js/songRender.js"></script>
+<script src="~/js/playlistStats.js"></script>
+<script src="~/js/songEditor.js"></script>

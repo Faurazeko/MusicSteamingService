@@ -1,0 +1,221 @@
+html {
+	position: relative;
+	min-height: 100%;
+	font-size: 14px;
+}
+
+body {
+	margin-bottom: 60px;
+	background-color: #101010;
+	font-family: 'Roboto', sans-serif;
+	color: white;
+}
+
+.item-bg {
+	background-color: #102B3F;
+	color: #E8E8E8;
+}
+
+::selection {
+	background: #6247AA;
+	color: white;
+}
+
+.menu-item {
+	transition: background-color 0.15s;
+	border-radius: 0.3rem;
+}
+
+.menu-item-frame {
+	transition: background-color 0.15s;
+	border: solid 0.25rem #101010;
+	border-radius: 0.3rem;
+}
+
+.menu-item:hover {
+	background: rgb(65, 65, 65);
+}
+
+.menu-item-frame:hover {
+	background: rgb(65, 65, 65);
+}
+
+.text-mono {
+	font-family: 'Roboto Mono', monospace !important;
+}
+
+a{
+	color: inherit;
+	transition: color 0.2s;
+}
+
+a:hover {
+	color: #6247AA;
+}
+
+.mirror-flip {
+	-moz-transform: scale(-1, 1);
+	-webkit-transform: scale(-1, 1);
+	-o-transform: scale(-1, 1);
+	-ms-transform: scale(-1, 1);
+	transform: scale(-1, 1);
+}
+
+.kinda-btn {
+	color: white;
+	transition: color 0.2s;
+}
+
+.kinda-btn:hover {
+	color: #6247AA;
+}
+
+.kinda-btn-toggle {
+	color: #6247AA;
+	transition: color 0.2s;
+}
+
+.kinda-btn-toggle:hover {
+	color: white;
+}
+
+.active-song {
+	border: solid 0.25rem #6247AA;
+	border-radius: 0.2rem;
+}
+
+.muted-volume {
+	color: rgba(255, 0, 0, 1);
+	transition: color 0.2s;
+}
+
+.muted-volume:hover {
+	color: rgba(255, 80, 80, 1);
+}
+
+.flip {
+	transform: rotate(180deg);
+}
+
+#sortIndexer {
+	-moz-transition: transform 0.5s;
+	-webkit-transition: transform 0.5s;
+	transition: transform 0.5s;
+	color: #6247AA;
+}
+
+.vertical-center {
+	margin: 0;
+	position: absolute;
+	top: 50%;
+	-ms-transform: translateY(-50%);
+	transform: translateY(-50%);
+}
+
+.center {
+	margin: 0;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+}
+
+
+.kinda-btn-red {
+	color: white;
+	transition: color 0.2s;
+}
+
+	.kinda-btn-red:hover {
+		color: red;
+	}
+
+.kinda-btn-red-toggle {
+	color: red;
+	transition: color 0.2s;
+}
+
+	.kinda-btn-red-toggle:hover {
+		color: white;
+	}
+
+.mono {
+	font-family: 'Roboto Mono', monospace;
+	color:darkgray;
+	transition: color 0.3s;
+}
+
+.mono:hover{
+	color: lightgray;
+}
+
+.table-header {
+	display: flex;
+	cursor: pointer;
+	position: relative;
+}
+
+.nav {
+	height: 100%;
+	display: inline-block;
+	float: right;
+	white-space: nowrap;
+	line-height: 5vh;
+	text-transform: uppercase;
+	font-size: 1.5rem;
+}
+
+.nav-item {
+	text-decoration: none;
+	position:relative;
+}
+
+	.nav-item:after {
+		position: absolute;
+		content: "";
+		height: 0.25rem;
+		bottom: -0.05rem;
+		margin: 0 auto;
+		left: 0;
+		right: 0;
+		width: 0%;
+		background: #6247AA;
+		-o-transition: .5s;
+		-moz-transition: .5s;
+		-webkit-transition: .5s;
+		transition: .5s;
+	}
+
+	.nav-item:hover:after {
+		width: 100%;
+	}
+
+.btn:focus {
+	outline: none;
+	box-shadow: none;
+}
+
+.btn {
+	box-shadow: none !important;
+}
+
+#leftControls {
+	position: fixed;
+	margin: 0;
+	left: 1vw;
+	top: 40%;
+	-ms-transform: translateY(-40%);
+	transform: translateY(-40%);
+}
+
+@media (max-width: 1800px){
+	#leftControls {
+		position: inherit;
+		left: inherit;
+		top: inherit;
+		-ms-transform: inherit;
+		transform: inherit;
+		min-width:100%;
+	}
+}

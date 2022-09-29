@@ -1,0 +1,43 @@
+﻿
+<div class="text-mono">
+
+	<h1 class="text-center">Account settings</h1>
+
+	<div>
+		<div class="item-bg-noround rounded border border-2 border-info p-3 mt-2">
+			<h3>Playlist visibility</h3>
+			<p>Should this playlist be available for everyone using link?</p>
+			<div class="form-check form-switch">
+				<input id="visibilityCheckBox" class="form-check-input" type="checkbox"style="transform: scale(1.25);" onchange="changePlaylistVisibility()">
+				<label class="form-check-label" for="flexSwitchCheckDefault">Enable link access</label>
+			</div>
+
+		</div>
+
+		<div class="item-bg-noround rounded border border-2 border-info p-3 mt-2">
+			<h3>Change password</h3>
+			<p>Here you can change your account passphrase. After you change it it will log out your account on all devieces.</p>
+			<p>Note: the length of the password should be grater than 8 and less than 255.</p>
+			<input id="newPasswordInput" type="text" style="width:50%;" value="" placeholder="New password" /> <br />
+			<button class="btn btn-warning mt-2" onclick="updatePassword()">Save this password</button>
+		</div>
+	</div>
+
+	<h1 class="text-center">Danger zone</h1>
+
+	<div class="item-bg-noround rounded border border-2 border-danger p-3 mt-2">
+		<h3>Empty playlist</h3>
+		<p>This will delete all your songs from your playlist and also from server</b></p>
+		<button class="btn btn-outline-danger" onclick="">Delete all songs</button>
+	</div>
+
+	<div class="item-bg-noround rounded border border-2 border-danger p-3 mt-2">
+		<h3>Delete accout</h3>
+		<p>This will delete your account including songs <b>without the possibility of recovery.</b></p>
+		<button class="btn btn-outline-danger" onclick="deleteAccount()">Confirm</button>
+	</div>
+
+
+</div>
+
+<script src="/js/userSettings.js"></script>

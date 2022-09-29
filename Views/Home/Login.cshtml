@@ -1,0 +1,24 @@
+﻿@{
+    var returnUrl = ViewData["ReturnUrl"] as string;
+    var errorMsg = TempData["Error"] as string;
+}
+
+<div class="d-flex align-items-center justify-content-center mt-5" style="height: 100%;">
+    <form action="/home/login?ReturnUrl=@System.Net.WebUtility.UrlEncode(returnUrl)" method="post">
+
+        <div class="container-fluid text-white text-center" >
+            <h1>Login page</h1>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMsg))
+        {
+            <div class="alert alert-danger" role="alert">
+                @errorMsg
+            </div>
+        }
+
+        <input class="form-control" type="text" name="username" placeholder="Username"/>
+        <input class="form-control mt-1" type="password" name="password" placeholder="Password"/>
+        <input class="form-control mt-1 bg-primary text-white" type="submit" value="Login" />
+    </form>
+</div>
